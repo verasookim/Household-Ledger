@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="reports-container fade-in">
+  <h2 class="mb-4 text-center">Reports</h2>
+  <div class="row justify-content-center">
+    <!-- Weekly Report Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <i class="fas fa-calendar-week fa-3x mb-3" style="color: var(--btn-primary);"></i>
+          <h5 class="card-title">Weekly Report</h5>
+          <p class="card-text">View and analyze your weekly financial activities.</p>
+          <a href="{{ url_for('weekly_route') }}" class="btn btn-primary">View Weekly Report</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Monthly Report Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <i class="fas fa-calendar-alt fa-3x mb-3" style="color: var(--btn-primary);"></i>
+          <h5 class="card-title">Monthly Report</h5>
+          <p class="card-text">Analyze your monthly spending and savings.</p>
+          <a href="{{ url_for('monthly_route') }}" class="btn btn-primary">View Monthly Report</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Annual Report Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <i class="fas fa-calendar fa-3x mb-3" style="color: var(--btn-primary);"></i>
+          <h5 class="card-title">Annual Report</h5>
+          <p class="card-text">Gain insights into your yearly financial trends.</p>
+          <a href="{{ url_for('annual_route') }}" class="btn btn-primary">View Annual Report</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

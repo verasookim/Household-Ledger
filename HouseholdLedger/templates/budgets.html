@@ -1,0 +1,88 @@
+<!-- templates/budgets.html -->
+{% extends "base.html" %}
+{% block title %}Manage Budgets{% endblock %}
+
+{% block content %}
+<h2>Manage Budgets</h2>
+
+<!-- Form to Add/Update a Budget -->
+<form method="POST" action="{{ url_for('budgets_route') }}" class="mb-4">
+  <div class="mb-3">
+    <label for="category" class="form-label">Category</label>
+    <input type="text" class="form-control" name="category" required>
+  </div>
+  <div class="mb-3">
+    <label for="timeframe" class="form-label">Timeframe</label>
+    <select class="form-select" name="timeframe" required>
+      <option value="">-- Select --</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="annually">Annually</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label for="amount" class="form-label">Budget Amount</label>
+    <input type="number" step="0.01" class="form-control" name="amount" required>
+  </div>
+  <button type="submit" class="btn btn-primary">Save Budget</button>
+</form>
+
+<!-- List Existing Budgets -->
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Timeframe</th>
+      <th>Budget</th>
+      <th>Spent</th>
+      <th>Remaining</th>
+      <th>Progress</th>
+      <th>Actions</th> <!-- New column for actions -->
+    </tr>
+  </thead>
+  <tbody>
+    {% for b in budget_status_list %}
+    <tr>
+      <td>{{ b.category }}</td>
+      <td>{{ b.timeframe.capitalize() }}</td>
+      <td>${{ "%.2f"|format(b.budget_amount) }}</td>
+      <td>${{ "%.2f"|format(b.spent) }}</td>
+      <td>
+        {% if b.remaining < 0 %}
+          <span class="text-danger">Over by ${{ "%.2f"|format(-b.remaining) }}</span>
+        {% else %}
+          ${{ "%.2f"|format(b.remaining) }}
+        {% endif %}
+      </td>
+      <td style="width: 200px;">
+        <div class="progress" style="height: 20px;">
+          {% set progress_val = b.percentage if b.percentage <= 100 else 100 %}
+          <div
+            class="progress-bar 
+            {% if b.percentage >= 100 %}
+               bg-danger
+            {% elif b.percentage >= 80 %}
+               bg-warning
+            {% else %}
+               bg-success
+            {% endif %}"
+            role="progressbar"
+            style="width: {{ progress_val }}%;"
+            aria-valuenow="{{ progress_val }}"
+            aria-valuemin="0"
+            aria-valuemax="100">
+            {{ "%.0f"|format(b.percentage) }}%
+          </div>
+        </div>
+      </td>
+      <td>
+        <!-- Delete Button Form -->
+        <form method="POST" action="{{ url_for('delete_budget_route', budget_id=b.id) }}" onsubmit="return confirm('Are you sure you want to delete this budget?');">
+          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

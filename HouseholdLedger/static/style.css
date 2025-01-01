@@ -1,0 +1,237 @@
+/* style.css */
+
+/* Transition for smooth theme change */
+body, .navbar, .card, footer {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Additional styling for hero section */
+.hero {
+    background-image: url('../images/hero-background.jpg'); /* Ensure this image complements the navy theme */
+    background-size: cover;
+    background-position: center;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: var(--text-color);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 31, 63, 0.5); /* Semi-transparent navy overlay for better text readability */
+    transition: background 0.3s;
+}
+
+.hero .text-center {
+    position: relative;
+    z-index: 1;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Fade-In Animation */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: 10px;
+    background-color: var(--card-background);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: var(--btn-primary);
+    border-color: var(--btn-primary);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: var(--btn-primary-hover);
+    border-color: var(--btn-primary-hover);
+}
+
+/* Toggle Button Styles */
+.toggle-btn {
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--nav-text-color);
+    background: none;
+    border: none;
+    transition: color 0.3s;
+}
+
+.toggle-btn:hover {
+    color: var(--btn-primary);
+}
+
+/* Alert Styles */
+.alert {
+    border-radius: 8px;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--btn-primary);
+}
+
+.alert-primary {
+    background-color: var(--btn-primary);
+    color: #ffffff;
+}
+
+.alert-success {
+    background-color: #28a745;
+    color: #ffffff;
+}
+
+.alert-danger {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+.alert-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+/* Footer Styling */
+footer {
+    background-color: var(--nav-background);
+    color: var(--nav-text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Custom Scrollbar for Better Aesthetics */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--background-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--btn-primary);
+    border-radius: 4px;
+    border: 2px solid var(--background-color);
+}
+
+/* Additional Styling for Forms */
+.form-control {
+    border-radius: 5px;
+    border: 1px solid var(--btn-primary);
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: var(--btn-primary-hover);
+    box-shadow: 0 0 0 0.2rem rgba(0, 69, 128, 0.25);
+}
+
+/* Table Styling */
+.table {
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.table thead th {
+    background-color: var(--btn-primary);
+    color: #ffffff;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.table tbody tr {
+    background-color: var(--card-background);
+    border-radius: 10px;
+}
+
+.table tbody tr td {
+    padding: 15px;
+    border-top: none;
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+    .hero {
+        height: 40vh;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+}
+
+/* Additional Enhancements */
+
+/* Tooltip Styling */
+.tooltip-inner {
+    background-color: var(--btn-primary);
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+}
+
+/* Modal Styling */
+.modal-content {
+    border-radius: 10px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+/* Icon Button Styling */
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--btn-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.icon-btn:hover {
+    color: var(--btn-primary-hover);
+}
+
+/* Navbar Brand Icon */
+.navbar-brand i {
+    margin-right: 8px;
+    transition: color 0.3s;
+}
+
+.navbar-brand:hover i {
+    color: var(--btn-primary);
+}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Annual Report{% if year %} for {{ year }}{% endif %}</h2>
+
+  {% if data and data|length > 0 %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Type</th>
+          <th>Total Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data %}
+        <tr>
+          <td>{{ row.category }}</td>
+          <td>{{ row.type }}</td>
+          <td>{{ row.total_amount }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No data{% if year %} for {{ year }}{% endif %}.</p>
+  {% endif %}
+{% endblock %}

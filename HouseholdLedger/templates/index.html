@@ -1,0 +1,353 @@
+<!-- templates/index.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="jumbotron bg-primary text-white text-center p-5 rounded fade-in">
+  <h1 class="display-4">Take Control of Your Finances</h1>
+  <p class="lead">Easily track your income and expenses, set budgets, and achieve your financial goals.</p>
+  <hr class="my-4">
+  <a class="btn btn-lg btn-light text-primary" href="{{ url_for('add_transaction_route') }}" role="button">
+    Get Started <i class="fas fa-arrow-right ms-2"></i>
+  </a>
+</div>
+
+<!-- Interactive Charts Section -->
+<div class="charts-section my-5">
+  <h2 class="text-center mb-5">Your Financial Insights</h2>
+  <div class="row">
+    <!-- 1) Doughnut Chart -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow-sm fade-in">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h2 class="mb-0">Category Distribution</h2>
+          <button class="btn btn-secondary btn-sm" id="toggleCategoryChart" title="Toggle Chart Type" aria-label="Toggle Category Chart Type">
+            <i class="fas fa-exchange-alt"></i>
+          </button>
+        </div>
+        <div class="card-body">
+          <canvas id="categoryChart" style="height: 300px; width: 100%;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2) Stacked Bar Chart -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow-sm fade-in">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0">Monthly Income vs. Expenses</h2>
+        </div>
+        <div class="card-body">
+          <canvas id="incomeExpenseChart" style="height: 300px; width: 100%;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3) Line Chart -->
+    <div class="col-12 mb-4">
+      <div class="card shadow-sm fade-in">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0">Daily Spending Trend</h2>
+        </div>
+        <div class="card-body">
+          <canvas id="trendChart" style="height: 300px; width: 100%;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Chart Initialization Scripts -->
+<script>
+    // Safely serialize the data object to JSON
+    const dataFromServer = {{ data | tojson | safe }};
+    console.log("Data Received:", dataFromServer);
+
+    //------------------------------
+    // 1) Doughnut Chart (Category)
+    //------------------------------
+    const categoryDist = dataFromServer.categoryDistribution;
+    const categories = Object.keys(categoryDist);
+    const catValues = Object.values(categoryDist);
+
+    // Define a color palette that complements navy blue
+    const categoryColors = [
+        'rgba(54, 162, 235, 0.7)',  // Blue
+        'rgba(255, 206, 86, 0.7)',  // Yellow
+        'rgba(75, 192, 192, 0.7)',  // Teal
+        'rgba(153, 102, 255, 0.7)', // Purple
+        'rgba(255, 159, 64, 0.7)'    // Orange
+    ];
+
+    const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+    const categoryChart = new Chart(ctxCategory, {
+        type: 'doughnut',
+        data: {
+            labels: categories,
+            datasets: [{
+                data: catValues,
+                backgroundColor: categoryColors.slice(0, categories.length),
+                hoverOffset: 30
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 20,
+                        padding: 15,
+                        font: {
+                            family: 'Montserrat, sans-serif',
+                            size: 14
+                        },
+                        color: 'var(--text-color)'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 31, 63, 0.8)',
+                    titleFont: {
+                        family: 'Montserrat, sans-serif',
+                        size: 16
+                    },
+                    bodyFont: {
+                        family: 'Roboto, sans-serif',
+                        size: 14
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed !== null) {
+                                label += '$' + context.parsed;
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+
+    // Toggle Doughnut/Pie Chart
+    document.getElementById('toggleCategoryChart').addEventListener('click', function() {
+        const currentType = categoryChart.config.type;
+        categoryChart.config.type = currentType === 'doughnut' ? 'pie' : 'doughnut';
+        categoryChart.update();
+    });
+
+    //---------------------------------------------
+    // 2) Stacked Bar Chart (Monthly Income/Expense)
+    //---------------------------------------------
+    const monthlyData = dataFromServer.incomeExpenses;
+    const months = monthlyData.months;
+    const incomes = monthlyData.income;
+    const expenses = monthlyData.expense;
+
+    const ctxIncomeExpense = document.getElementById('incomeExpenseChart').getContext('2d');
+    const incomeExpenseChart = new Chart(ctxIncomeExpense, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Income',
+                    data: incomes,
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                },
+                {
+                    label: 'Expense',
+                    data: expenses,
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        boxWidth: 20,
+                        padding: 15,
+                        font: {
+                            family: 'Montserrat, sans-serif',
+                            size: 14
+                        },
+                        color: 'var(--text-color)'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 31, 63, 0.8)',
+                    titleFont: {
+                        family: 'Montserrat, sans-serif',
+                        size: 16
+                    },
+                    bodyFont: {
+                        family: 'Roboto, sans-serif',
+                        size: 14
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += '$' + context.parsed.y;
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: 'var(--text-color)',
+                        font: {
+                            family: 'Roboto, sans-serif',
+                            size: 14
+                        }
+                    }
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    ticks: {
+                        color: 'var(--text-color)',
+                        font: {
+                            family: 'Roboto, sans-serif',
+                            size: 14
+                        }
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutBounce'
+            }
+        }
+    });
+
+    //---------------------------------
+    // 3) Line Chart (Trend)
+    //---------------------------------
+    const dailyTrend = dataFromServer.dailyTrend;
+    const trendDates = dailyTrend.dates;
+    const trendValues = dailyTrend.values;
+
+    const ctxTrend = document.getElementById('trendChart').getContext('2d');
+    const trendChart = new Chart(ctxTrend, {
+        type: 'line',
+        data: {
+            labels: trendDates,
+            datasets: [{
+                label: 'Daily Spending',
+                data: trendValues,
+                borderColor: 'rgba(255, 159, 64, 1)',
+                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: 'rgba(255, 159, 64, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(255, 159, 64, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        boxWidth: 20,
+                        padding: 15,
+                        font: {
+                            family: 'Montserrat, sans-serif',
+                            size: 14
+                        },
+                        color: 'var(--text-color)'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 31, 63, 0.8)',
+                    titleFont: {
+                        family: 'Montserrat, sans-serif',
+                        size: 16
+                    },
+                    bodyFont: {
+                        family: 'Roboto, sans-serif',
+                        size: 14
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += '$' + context.parsed.y;
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: 'var(--text-color)',
+                        font: {
+                            family: 'Roboto, sans-serif',
+                            size: 14
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    ticks: {
+                        color: 'var(--text-color)',
+                        font: {
+                            family: 'Roboto, sans-serif',
+                            size: 14
+                        }
+                    }
+                }
+            },
+            animation: {
+                duration: 1500,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+</script>
+{% endblock %}
